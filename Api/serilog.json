@@ -1,0 +1,73 @@
+﻿{
+  "Serilog": {
+    "Using": [ "Serilog.Sinks.File", "Serilog.Sinks.Console", "Serilog.Sinks.MSSqlServer" ],
+    "MinimumLevel": {
+      "Default": "Information"
+    },
+    "WriteTo": [
+      {
+        "Name": "File",
+        "Args": {
+          "path": "../logs/webapi-.log",
+          "rollingInterval": "Day",
+          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {CorrelationId} {Level:u3} {Username} {Message:lj}{Exception}{NewLine}"
+        }
+      },
+      {
+        "Name": "Console"
+      },
+      {
+        "Name": "MSSqlServer",
+        "Args": {
+          "connectionString": "SerilogConnectionString",
+          "sinkOptionsSection": {
+            "tableName": "Logs",
+            "schemaName": "EventLogging",
+            "autoCreateSqlTable": true,
+            "batchPostingLimit": 1000,
+            "period": "0.00:00:30"
+          },
+          "restrictedToMinimumLevel": "Warning",
+          "columnOptionsSection": {
+            "disableTriggers": true,
+            "clusteredColumnstoreIndex": false,
+            "primaryKeyColumnName": "Id",
+            "addStandardColumns": [ "LogEvent" ],
+            "removeStandardColumns": [ "MessageTemplate", "Properties" ],
+            "id": { "nonClusteredIndex": true },
+            "level": {
+              "columnName": "Severity",
+              "storeAsEnum": false
+            },
+            "properties": {
+              "columnName": "Properties",
+              "excludeAdditionalProperties": true,
+              "dictionaryElementName": "dict",
+              "itemElementName": "item",
+              "omitDictionaryContainerElement": false,
+              "omitSequenceContainerElement": false,
+              "omitStructureContainerElement": false,
+              "omitElementIfEmpty": true,
+              "propertyElementName": "prop",
+              "rootElementName": "root",
+              "sequenceElementName": "seq",
+              "structureElementName": "struct",
+              "usePropertyKeyAsElementName": false
+            },
+            "timeStamp": {
+              "columnName": "Timestamp",
+              "convertToUtc": true
+            },
+            "logEvent": {
+              "excludeAdditionalProperties": true,
+              "excludeStandardColumns": true
+            },
+            "message": { "columnName": "Msg" },
+            "exception": { "columnName": "Ex" },
+            "messageTemplate": { "columnName": "Template" }
+          }
+        }
+      }
+    ]
+  }
+}
